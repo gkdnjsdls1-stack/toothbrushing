@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>양치</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#13201C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="양치">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#F4F6F5;--surface:#FFFFFF;--ink:#13201C;--muted:#4A5753;--faint:#5B6864;--line:#D5DCDA;--soft:#EEF2F1;
+  --teal:#0E5F66;--teal-ink:#FFFFFF;--orange:#C2410C;--btn:#13201C;--btn-ink:#FFFFFF;
+  --okbg:#E1F0F1;--okink:#0A464B;--skipbg:#FBE3D6;--skipink:#8A2E07;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101917;--surface:#18241F;--ink:#EEF3F1;--muted:#A9B6B1;--faint:#9AA7A3;--line:#2E3D38;--soft:#22322D;
+    --teal:#5FC4CC;--teal-ink:#0B1513;--orange:#F08A4B;--btn:#EEF3F1;--btn-ink:#101917;
+    --okbg:#1E3A3C;--okink:#A9E4E8;--skipbg:#3D2618;--skipink:#F8B98F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101917;--surface:#18241F;--ink:#EEF3F1;--muted:#A9B6B1;--faint:#9AA7A3;--line:#2E3D38;--soft:#22322D;
+  --teal:#5FC4CC;--teal-ink:#0B1513;--orange:#F08A4B;--btn:#EEF3F1;--btn-ink:#101917;
+  --okbg:#1E3A3C;--okink:#A9E4E8;--skipbg:#3D2618;--skipink:#F8B98F;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+.screen{flex:1;display:flex;flex-direction:column;gap:22px;padding:40px 24px 28px}
+.kicker{margin:0;font-size:13px;font-weight:700;color:var(--teal)}
+h1{margin:0;font-size:28px;line-height:1.35;font-weight:900;word-break:keep-all}
+.lead{margin:0;font-size:15px;line-height:1.6;color:var(--muted);word-break:keep-all}
+.grow{flex:1}
+.primary{all:unset;box-sizing:border-box;display:flex;justify-content:center;align-items:center;min-height:56px;padding:0 20px;border-radius:16px;background:var(--btn);color:var(--btn-ink);font-size:17px;font-weight:700;cursor:pointer;text-align:center}
+.primary[disabled]{opacity:.4;cursor:default}
+.ghost{all:unset;box-sizing:border-box;display:flex;justify-content:center;align-items:center;min-height:48px;border-radius:14px;color:var(--muted);font-size:15px;font-weight:500;cursor:pointer}
+.modecard{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:20px;background:var(--surface);border:2px solid var(--line);cursor:pointer}
+.modecard[aria-pressed="true"]{border-color:var(--teal)}
+.modehead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.modehead b{font-size:20px}
+.pill{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--ink);white-space:nowrap}
+.modecard[aria-pressed="true"] .pill{background:var(--teal);color:var(--teal-ink)}
+.modecard span.desc{font-size:14px;line-height:1.6;color:var(--muted);word-break:keep-all}
+.panel{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:18px;background:var(--surface)}
+.archlabel{text-align:center;font-size:12px;font-weight:700;color:var(--faint)}
+.teeth{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.tooth{all:unset;box-sizing:border-box;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--soft);font-size:13px;font-weight:500;cursor:pointer}
+.tooth[aria-pressed="true"]{background:var(--orange);color:#fff;font-weight:700}
+.sep{height:1px;background:var(--line);margin:4px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{all:unset;box-sizing:border-box;min-height:44px;padding:0 16px;display:flex;align-items:center;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);font-size:14px;font-weight:500;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--teal-ink);font-weight:700}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dot{width:28px;height:28px;border-radius:50%;border:2px dashed var(--faint)}
+.dot.full{background:var(--teal);border:none}
+.dot.part{background:var(--orange);border:none}
+.dot.today{outline:2px solid var(--ink);outline-offset:2px}
+.legend{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.zrow{display:flex;align-items:center;justify-content:space-between;min-height:40px;border-bottom:1px solid var(--line);font-size:15px;gap:8px}
+.zrow:last-child{border-bottom:none}
+.zrow .nm{display:flex;align-items:center;gap:8px}
+.zdot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.zdot.boss{background:var(--orange)}
+.tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.tag.ok{background:var(--okbg);color:var(--okink)}
+.tag.skip{background:var(--skipbg);color:var(--skipink)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.choice{all:unset;box-sizing:border-box;min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--soft);font-size:15px;font-weight:700;cursor:pointer;text-align:center}
+.choice[aria-pressed="true"]{background:var(--teal);color:var(--teal-ink)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.iconbtn{all:unset;box-sizing:border-box;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--soft);cursor:pointer}
+.hist{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:16px;background:var(--surface);font-size:14px;line-height:1.6}
+.hist b{font-size:15px}
+.muted{color:var(--muted)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:15px;line-height:1.6;background:var(--surface);border-radius:16px}
+
+/* 플레이 화면: 세면대 위에서 멀리 보이도록 항상 어둡게 */
+.play{background:#13201C;color:#F4F6F5;gap:18px}
+.play .pbar{display:grid;gap:4px}
+.play .seg{height:6px;border-radius:3px;background:#33443F}
+.play .seg.done{background:#7FD3D9}
+.play .seg.skip{background:#6B5A50}
+.play .seg.now{background:#F08A4B}
+.play .pbtn{all:unset;box-sizing:border-box;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#22322D;cursor:pointer}
+.play .meta{font-size:14px;font-weight:700;color:#B7C2BE}
+.play .badge{font-size:12px;font-weight:900;color:#13201C;background:#F08A4B;padding:4px 12px;border-radius:999px}
+.play .badge.calm{background:#7FD3D9}
+.play h2{margin:4px 0 0;font-size:28px;font-weight:900;line-height:1.3;text-align:center;word-break:keep-all}
+.play .sub{margin:0;font-size:15px;color:#B7C2BE;text-align:center}
+.play .gauge{height:14px;border-radius:7px;background:#33443F;overflow:hidden}
+.play .fill{height:100%;width:0;border-radius:7px;background:#F08A4B;transition:width .25s linear}
+.play .fill.calm{background:#7FD3D9}
+.play .why{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border-radius:16px;background:#22322D}
+.play .why span:first-child{font-size:13px;font-weight:700;color:#7FD3D9}
+.play .why span:last-child{font-size:15px;line-height:1.6;word-break:keep-all}
+.play .next{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;min-height:76px;border-radius:18px;background:#F4F6F5;color:#13201C;cursor:pointer}
+.play .next b{font-size:18px;font-weight:900}
+.play .next span{font-size:13px;color:#4A5753}
+.play .hint{margin:0;text-align:center;font-size:13px;color:#9AA7A3}
+.play .toothbig{font-size:64px;font-weight:900;text-align:center;color:#F08A4B;line-height:1}
+.play .flash{animation:flash .6s ease-out}
+@keyframes flash{from{background:#2E5A55}to{background:#22322D}}
+.overlay{position:fixed;inset:0;background:rgba(10,16,14,.86);display:flex;align-items:center;justify-content:center;padding:24px;z-index:20}
+.overlay .box{width:100%;max-width:360px;background:#22322D;color:#F4F6F5;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.overlay .box h3{margin:0 0 6px;font-size:20px}
+.overlay .light{all:unset;box-sizing:border-box;min-height:52px;border-radius:14px;background:#F4F6F5;color:#13201C;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.overlay .dim{all:unset;box-sizing:border-box;min-height:52px;border-radius:14px;background:#33443F;color:#F4F6F5;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.play .fill{transition:none}.play .flash{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+  'use strict';
+
+  // ---------- 저장소 (이 브라우저에만 저장, 실패해도 앱은 동작) ----------
+  var KEY_SET = 'ibang.settings.v1';
+  var KEY_REC = 'ibang.records.v1';
+  function load(key, fallback) {
+    try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch (e) { return fallback; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* 저장 불가 환경: 이번 세션만 유지 */ }
+  }
+
+  var settings = load(KEY_SET, null);   // {mode:'normal'|'prosth', teeth:[], tools:[]}
+  var records = load(KEY_REC, []);      // [{id,date,mode,done:[],skipped:[],pain:[]}]
+  if (!Array.isArray(records)) records = [];
+
+  var TOOLS = ['슈퍼플로스', '치간칫솔', '구강세정기'];
+  var UPPER_R = [18,17,16,15,14,13,12,11], UPPER_L = [21,22,23,24,25,26,27,28];
+  var LOWER_R = [48,47,46,45,44,43,42,41], LOWER_L = [31,32,33,34,35,36,37,38];
+
+  // ---------- 구역 정의 ----------
+  var BASE_ZONES = [
+    { id:'ub', name:'상악 구치부 협면', sub:'윗니 어금니 · 볼 쪽 면 · 좌우 양쪽', secs:30, boss:true, art:'upperOuterPost',
+      why:'귀밑샘 침이 나오는 자리라 치석이 잘 쌓여요. 칫솔을 볼 쪽으로 깊숙이 넣어 주세요.' },
+    { id:'ll', name:'하악 전치 설측', sub:'아랫니 앞니 · 혀 쪽 면', secs:20, boss:true, art:'lowerInnerAnt',
+      why:'혀 밑 침샘 바로 앞이라 치석이 빨리 생겨요. 칫솔을 세워서 안쪽을 위로 쓸어 올려 주세요.' },
+    { id:'lm', name:'최후방구치', sub:'맨 끝 어금니 뒷면 · 위아래 4곳', secs:20, boss:true, art:'lastMolars',
+      why:'칫솔이 가장 안 닿는 끝자리예요. 입을 조금만 벌리고 칫솔 끝을 뒤로 넣어 주세요.' },
+    { id:'cv', name:'치경부·잇몸선', sub:'이와 잇몸이 만나는 선 · 바깥쪽 전체', secs:30, boss:false, art:'outer',
+      why:'잇몸선을 따라 칫솔을 살짝 기울여 짧게 진동하듯 닦아 주세요.' },
+    { id:'in', name:'설측·구개면', sub:'나머지 안쪽 면 · 입천장 쪽과 혀 쪽', secs:20, boss:false, art:'inner',
+      why:'앞에서 못 닿은 안쪽 면을 마무리해요.' },
+    { id:'oc', name:'교합면', sub:'씹는 면 · 위아래 전체', secs:15, boss:false, art:'occlusal',
+      why:'씹는 면의 홈을 앞뒤로 문질러 주세요.' },
+    { id:'tg', name:'혀', sub:'혀 윗면', secs:10, boss:false, art:'tongue',
+      why:'혀 안쪽에서 바깥쪽으로 가볍게 쓸어 주세요.' }
+  ];
+
+  function buildZones() {
+    var list = BASE_ZONES.map(function (z) { return Object.assign({}, z); });
+    if (settings && settings.mode === 'prosth') {
+      var teeth = (settings.teeth || []).slice().sort(function (a, b) { return a - b; });
+      var cv = list[3];
+      cv.secs = 40;
+      if (teeth.length) cv.why = '잇몸선을 따라 짧게 진동하듯 닦아 주세요. 보철 경계부(' + teeth.join(', ') + '번)는 한 번 더 지나가 주세요.';
+      teeth.forEach(function (n, i) {
+        list.push({ id:'p' + n, tooth:n, name: n + '번 보철 하방', sub:'내 도구: ' + toolText(), secs:20, boss:true, art:'prosth', first: i === 0,
+          why:'보철 아래는 칫솔모가 닿지 않아요. 도구를 보철 밑으로 통과시켜 앞뒤로 움직여 주세요.' });
+      });
+    }
+    return list;
+  }
+  function toolText() {
+    var t = (settings && settings.tools) || [];
+    return t.length ? t.join(', ') : '준비한 도구';
+  }
+  function totalSecs(zs) { return zs.reduce(function (s, z) { return s + z.secs; }, 0); }
+  function fmt(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function approx(s) { var m = Math.round(s / 30) / 2; return '약 ' + (m % 1 ? Math.floor(m) + '분 30초' : m + '분'); }
+
+  // ---------- 아치 그림 ----------
+  function archSVG(art, boss) {
+    var hl = boss ? '#F08A4B' : '#7FD3D9';
+    var base = '<path d="M50 130 C50 20, 190 20, 190 130" fill="none" stroke="#33443F" stroke-width="26" stroke-linecap="round"/>' +
+               '<path d="M50 150 C50 260, 190 260, 190 150" fill="none" stroke="#33443F" stroke-width="26" stroke-linecap="round"/>';
+    var h = '';
+    var s = 'fill="none" stroke="' + hl + '" stroke-width="7" stroke-linecap="round"';
+    if (art === 'upperOuterPost') h = '<path d="M34 130 C33 112 35 98 40 84" ' + s + '/><path d="M206 130 C207 112 205 98 200 84" ' + s + '/>';
+    if (art === 'lowerInnerAnt') h = '<path d="M94 212 Q120 224 146 212" ' + s + '/>';
+    if (art === 'lastMolars') h = ['50,128','190,128','50,152','190,152'].map(function (p) { var c = p.split(','); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="9" fill="' + hl + '"/>'; }).join('');
+    if (art === 'outer') h = '<path d="M34 130 C34 4, 206 4, 206 130" ' + s + '/><path d="M34 150 C34 276, 206 276, 206 150" ' + s + '/>';
+    if (art === 'inner') h = '<path d="M66 130 C66 36, 174 36, 174 130" ' + s + '/><path d="M66 150 C66 244, 174 244, 174 150" ' + s + '/>';
+    if (art === 'occlusal') h = '<path d="M50 130 C50 20, 190 20, 190 130" fill="none" stroke="' + hl + '" stroke-width="6" stroke-dasharray="6 7" stroke-linecap="round"/><path d="M50 150 C50 260, 190 260, 190 150" fill="none" stroke="' + hl + '" stroke-width="6" stroke-dasharray="6 7" stroke-linecap="round"/>';
+    if (art === 'tongue') h = '<ellipse cx="120" cy="190" rx="38" ry="26" fill="' + hl + '"/>';
+    return '<svg width="200" height="234" viewBox="0 0 240 280" role="img" aria-label="치아 아치 그림, 오늘 닦을 구역이 강조됨">' + base + h + '</svg>';
+  }
+
+  // ---------- 날짜 ----------
+  function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function weekDays() {
+    var now = new Date(); var dow = (now.getDay() + 6) % 7; // 월=0
+    var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow);
+    var names = ['월','화','수','목','금','토','일'];
+    return names.map(function (n, i) { var d = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i); return { label:n, key:dayKey(d) }; });
+  }
+  function dayStatus(key) {
+    var rs = records.filter(function (r) { return r.date === key; });
+    if (!rs.length) return '';
+    return rs.some(function (r) { return r.skipped.length === 0; }) ? 'full' : 'part';
+  }
+  function weekHTML() {
+    var today = dayKey();
+    return '<div class="week">' + weekDays().map(function (d) {
+      var st = dayStatus(d.key);
+      var label = d.label + '요일 ' + (st === 'full' ? '모두 완료' : st === 'part' ? '일부 건너뜀' : '기록 없음');
+      return '<div class="day"><span class="dot ' + st + (d.key === today ? ' today' : '') + '" role="img" aria-label="' + label + '"></span>' + d.label + '</div>';
+    }).join('') + '</div><div class="legend"><span><i style="background:var(--teal)"></i>모두 완료</span><span><i style="background:var(--orange)"></i>일부 건너뜀</span></div>';
+  }
+
+  function teethChart(selected, attr) {
+    function row(nums) {
+      return '<div class="teeth">' + nums.map(function (n) {
+        var on = selected.indexOf(n) !== -1;
+        return '<button class="tooth" ' + attr + '="' + n + '" aria-pressed="' + on + '" aria-label="' + n + '번 치아">' + n + '</button>';
+      }).join('') + '</div>';
+    }
+    return '<div class="panel"><div class="archlabel">위턱 (오른쪽 18 · 왼쪽 28)</div>' + row(UPPER_R) + row(UPPER_L) +
+      '<div class="sep"></div>' + row(LOWER_R) + row(LOWER_L) + '<div class="archlabel">아래턱 (오른쪽 48 · 왼쪽 38)</div></div>';
+  }
+
+  // ---------- 화면 ----------
+  var app = document.getElementById('app');
+  var draft = null; // 설정 중인 값
+
+  function show(html, cls) {
+    app.innerHTML = '<main class="screen ' + (cls || '') + '">' + html + '</main>';
+    window.scrollTo(0, 0);
+  }
+
+  function screenMode() {
+    draft = draft || { mode:(settings && settings.mode) || 'normal', teeth:(settings && settings.teeth || []).slice(), tools:(settings && settings.tools || []).slice() };
+    var normalT = approx(totalSecs(BASE_ZONES));
+    show(
+      '<div style="display:flex;flex-direction:column;gap:8px"><p class="kicker">양치</p>' +
+      '<h1>오늘 양치,<br>어떤 모드로 할까요?</h1><p class="lead">모드는 한 번만 고르면 다음부터 바로 시작돼요.</p></div>' +
+      '<div style="display:flex;flex-direction:column;gap:14px">' +
+      '<button class="modecard" data-mode="normal" aria-pressed="' + (draft.mode === 'normal') + '"><span class="modehead"><b>일반 모드</b><span class="pill">' + normalT + '</span></span>' +
+      '<span class="desc">7구역 순서대로. 상악 구치부 협면, 하악 전치 설측, 최후방구치는 보스 구역으로 집중 공략해요.</span></button>' +
+      '<button class="modecard" data-mode="prosth" aria-pressed="' + (draft.mode === 'prosth') + '"><span class="modehead"><b>보철 모드</b><span class="pill">보철 수에 따라 +</span></span>' +
+      '<span class="desc">일반 모드에 보철 경계부 강조와 보조도구로 보철 하방을 닦는 단계가 더해져요.</span></button></div>' +
+      '<div class="grow"></div>' +
+      '<button class="primary" id="go">' + (draft.mode === 'prosth' ? '보철 위치 등록하기' : '일반 모드로 저장') + '</button>' +
+      (settings ? '<button class="ghost" id="back">취소</button>' : '')
+    );
+    app.querySelectorAll('[data-mode]').forEach(function (b) {
+      b.addEventListener('click', function () { draft.mode = b.getAttribute('data-mode'); screenMode(); });
+    });
+    document.getElementById('go').addEventListener('click', function () {
+      if (draft.mode === 'prosth') screenProsth();
+      else { settings = { mode:'normal', teeth:draft.teeth, tools:draft.tools }; save(KEY_SET, settings); draft = null; screenHome(); }
+    });
+    var back = document.getElementById('back');
+    if (back) back.addEventListener('click', function () { draft = null; screenHome(); });
+  }
+
+  function screenProsth() {
+    var ok = draft.teeth.length > 0 && draft.tools.length > 0;
+    show(
+      '<div style="display:flex;flex-direction:column;gap:6px"><p class="kicker">보철 모드 설정</p>' +
+      '<h1>보철이 있는 치아를<br>눌러주세요</h1><p class="lead">누른 치아는 양치할 때마다 경계부가 강조되고, 마지막에 하방 청소 단계가 생겨요.</p></div>' +
+      teethChart(draft.teeth, 'data-t') +
+      '<div style="display:flex;flex-direction:column;gap:10px"><p style="margin:0;font-size:15px;font-weight:700">보철 하방은 무엇으로 닦나요?</p>' +
+      '<div class="chips">' + TOOLS.map(function (t) { return '<button class="chip" data-tool="' + t + '" aria-pressed="' + (draft.tools.indexOf(t) !== -1) + '">' + t + '</button>'; }).join('') + '</div></div>' +
+      '<div class="grow"></div>' +
+      '<button class="primary" id="save" ' + (ok ? '' : 'disabled') + '>' + (ok ? draft.teeth.length + '개 치아 · 도구 ' + draft.tools.length + '개로 저장' : '치아와 도구를 하나 이상 골라 주세요') + '</button>' +
+      '<button class="ghost" id="back">모드 선택으로</button>'
+    );
+    app.querySelectorAll('[data-t]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var n = +b.getAttribute('data-t'); var i = draft.teeth.indexOf(n);
+        if (i === -1) draft.teeth.push(n); else draft.teeth.splice(i, 1);
+        screenProsthKeepScroll();
+      });
+    });
+    app.querySelectorAll('[data-tool]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = b.getAttribute('data-tool'); var i = draft.tools.indexOf(t);
+        if (i === -1) draft.tools.push(t); else draft.tools.splice(i, 1);
+        screenProsthKeepScroll();
+      });
+    });
+    document.getElementById('save').addEventListener('click', function () {
+      if (!ok) return;
+      settings = { mode:'prosth', teeth:draft.teeth.slice(), tools:draft.tools.slice() }; save(KEY_SET, settings); draft = null; screenHome();
+    });
+    document.getElementById('back').addEventListener('click', screenMode);
+  }
+  function screenProsthKeepScroll() { var y = window.scrollY; screenProsth(); window.scrollTo(0, y); }
+
+  function screenHome() {
+    var zs = buildZones();
+    var isP = settings.mode === 'prosth';
+    show(
+      '<div class="topbar"><p class="kicker" style="margin:0">양치</p>' +
+      '<button class="iconbtn" id="settings" aria-label="모드 바꾸기"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="7" cy="6" r="2.4" fill="var(--soft)" stroke="currentColor" stroke-width="2"/><circle cx="13" cy="14" r="2.4" fill="var(--soft)" stroke="currentColor" stroke-width="2"/></svg></button></div>' +
+      '<div style="display:flex;flex-direction:column;gap:8px"><h1>폰을 세면대에 세워두고<br>시작하세요</h1>' +
+      '<p class="lead">' + (isP ? '보철 모드' : '일반 모드') + ', ' + zs.length + '구역, ' + approx(totalSecs(zs)) + '. 구역 시간이 다 차면 진동과 함께 자동으로 넘어가요.</p></div>' +
+      '<div class="panel"><p style="margin:0;font-size:14px;font-weight:700;color:var(--muted)">이번 주</p>' + weekHTML() + '</div>' +
+      '<div class="grow"></div>' +
+      '<button class="primary" id="start">양치 시작</button>' +
+      '<button class="ghost" id="hist">치과 갈 때 보여줄 기록</button>'
+    );
+    document.getElementById('start').addEventListener('click', startPlay);
+    document.getElementById('hist').addEventListener('click', screenHistory);
+    document.getElementById('settings').addEventListener('click', function () { draft = null; screenMode(); });
+  }
+
+  // ---------- 플레이 ----------
+  var P = null; // {zones, idx, elapsed, status:[], running, timer, last, wake}
+
+  function startPlay() {
+    P = { zones: buildZones(), idx: 0, elapsed: 0, status: [], running: true, timer: null, last: 0, wake: null };
+    requestWake();
+    renderZone();
+    P.last = performance.now();
+    P.timer = setInterval(tick, 250);
+  }
+  function requestWake() {
+    try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (w) { if (P) P.wake = w; }).catch(function () {}); } catch (e) {}
+  }
+  function releaseWake() { try { if (P && P.wake) P.wake.release(); } catch (e) {} }
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+
+  function renderZone() {
+    var z = P.zones[P.idx], n = P.zones.length, nextZ = P.zones[P.idx + 1];
+    var segs = P.zones.map(function (_, i) {
+      var c = i < P.idx ? (P.status[i] === 'done' ? 'done' : 'skip') : (i === P.idx ? 'now' : '');
+      return '<div class="seg ' + c + '"></div>';
+    }).join('');
+    var art = z.art === 'prosth'
+      ? '<div class="toothbig" aria-hidden="true">' + z.tooth + '</div><p class="sub">번 치아 아래</p>'
+      : '<div style="display:flex;justify-content:center">' + archSVG(z.art, z.boss) + '</div>';
+    var intro = (z.art === 'prosth' && z.first)
+      ? '<div class="why flash"><span>도구 바꾸기</span><span>칫솔은 내려놓고 ' + toolText() + '을(를) 준비해 주세요. 등록한 치아를 하나씩 닦아요.</span></div>'
+      : '<div class="why flash"><span>' + (z.boss ? '왜 여기?' : '이렇게') + '</span><span>' + z.why + '</span></div>';
+    app.innerHTML =
+      '<main class="screen play">' +
+      '<div class="topbar"><button class="pbtn" id="pause" aria-label="일시정지"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M6 3v12M12 3v12" stroke="#F4F6F5" stroke-width="2.2" stroke-linecap="round"/></svg></button>' +
+      '<span class="meta">' + (settings.mode === 'prosth' ? '보철 모드' : '일반 모드') + ' ' + (P.idx + 1) + ' / ' + n + '</span>' +
+      '<span class="meta" id="left"></span></div>' +
+      '<div class="pbar" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr))">' + segs + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:6px;align-items:center">' +
+      '<span class="badge ' + (z.boss ? '' : 'calm') + '">' + (z.boss ? 'BOSS 구역' : '일반 구역') + '</span>' +
+      '<h2>' + z.name + '</h2><p class="sub">' + z.sub + '</p></div>' +
+      art +
+      '<div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>' + (z.boss ? '치석 게이지' : '진행') + '</span><span id="zt" style="color:' + (z.boss ? '#F08A4B' : '#7FD3D9') + '"></span></div>' +
+      '<div class="gauge"><div class="fill ' + (z.boss ? '' : 'calm') + '" id="fill"></div></div></div>' +
+      intro +
+      '<div class="grow"></div>' +
+      '<button class="next" id="next"><b>' + (nextZ ? '다음 구역으로' : '마무리하기') + '</b><span>' + (nextZ ? '다음: ' + nextZ.name + (nextZ.boss ? ' (BOSS)' : '') : '오늘 기록 보기') + '</span></button>' +
+      '<p class="hint">시간이 다 차면 자동으로 넘어가요. 절반 전에 넘기면 건너뜀으로 기록돼요.</p>' +
+      '</main>';
+    document.getElementById('next').addEventListener('click', function () { advance(false); });
+    document.getElementById('pause').addEventListener('click', pause);
+    updateTick();
+  }
+  function updateTick() {
+    var z = P.zones[P.idx];
+    var remainAll = z.secs - P.elapsed + totalSecs(P.zones.slice(P.idx + 1));
+    var pct = Math.min(100, P.elapsed / z.secs * 100);
+    var f = document.getElementById('fill'); if (f) f.style.width = pct + '%';
+    var t = document.getElementById('zt'); if (t) t.textContent = fmt(P.elapsed) + ' / ' + fmt(z.secs);
+    var l = document.getElementById('left'); if (l) l.textContent = fmt(remainAll) + ' 남음';
+  }
+  function tick() {
+    if (!P || !P.running) return;
+    var now = performance.now(); P.elapsed += (now - P.last) / 1000; P.last = now;
+    if (P.elapsed >= P.zones[P.idx].secs) { advance(true); return; }
+    updateTick();
+  }
+  function advance(auto) {
+    var z = P.zones[P.idx];
+    P.status[P.idx] = (auto || P.elapsed >= z.secs * 0.5) ? 'done' : 'skip';
+    P.idx++; P.elapsed = 0; P.last = performance.now();
+    buzz(auto ? [180, 80, 180] : 60);
+    if (P.idx >= P.zones.length) { finish(); return; }
+    renderZone();
+  }
+  function pause() {
+    P.running = false;
+    var ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = '<div class="box" role="dialog" aria-modal="true" aria-label="일시정지"><h3>잠깐 멈췄어요</h3>' +
+      '<button class="light" id="resume">계속하기</button><button class="dim" id="quit">여기서 끝내기</button></div>';
+    document.body.appendChild(ov);
+    document.getElementById('resume').focus();
+    document.getElementById('resume').addEventListener('click', function () { ov.remove(); P.last = performance.now(); P.running = true; });
+    document.getElementById('quit').addEventListener('click', function () {
+      ov.remove();
+      for (var i = P.idx; i < P.zones.length; i++) P.status[i] = (i === P.idx && P.elapsed >= P.zones[i].secs * 0.5) ? 'done' : 'skip';
+      P.idx = P.zones.length; finish();
+    });
+  }
+  function finish() {
+    clearInterval(P.timer); releaseWake();
+    var rec = { id: Date.now(), date: dayKey(), mode: settings.mode, done: [], skipped: [], pain: [], zones: [] };
+    P.zones.forEach(function (z, i) {
+      rec.zones.push({ name: z.name, boss: z.boss, st: P.status[i] || 'skip' });
+      if (P.status[i] === 'done') rec.done.push(z.name); else rec.skipped.push(z.name);
+    });
+    records.push(rec);
+    if (records.length > 400) records = records.slice(-400);
+    save(KEY_REC, records);
+    P = null;
+    screenResult(rec, null);
+  }
+
+  // ---------- 결과 ----------
+  function screenResult(rec, painOpen) {
+    var head = rec.skipped.length === 0 ? '모든 구역 완료!' :
+      rec.done.length + '구역 완료,<br>' + rec.skipped.length + '곳을 건너뛰었어요';
+    var rows = rec.zones.map(function (z) {
+      return '<div class="zrow"><span class="nm"><span class="zdot ' + (z.boss ? 'boss' : '') + '"></span>' + z.name + '</span>' +
+        '<span class="tag ' + (z.st === 'done' ? 'ok' : 'skip') + '">' + (z.st === 'done' ? '완료' : '건너뜀') + '</span></div>';
+    }).join('');
+    var hasPain = painOpen === true || rec.pain.length > 0;
+    show(
+      '<div style="display:flex;flex-direction:column;gap:4px"><p class="kicker">오늘 양치 끝</p><h1>' + head + '</h1></div>' +
+      '<div class="panel" style="padding:8px 16px;gap:0">' + rows + '</div>' +
+      '<div class="panel"><p style="margin:0;font-size:15px;font-weight:700">피가 나거나 시린 곳이 있었나요?</p>' +
+      '<div class="two"><button class="choice" id="nopain" aria-pressed="' + (painOpen === false) + '">없었어요</button>' +
+      '<button class="choice" id="yespain" aria-pressed="' + hasPain + '">있었어요</button></div>' +
+      (hasPain ? '<p class="lead" style="font-size:14px">해당 치아를 눌러 주세요. 기록에 쌓여요.</p>' : '') + '</div>' +
+      (hasPain ? teethChart(rec.pain, 'data-p') : '') +
+      '<div class="panel"><p style="margin:0;font-size:14px;font-weight:700;color:var(--muted)">이번 주</p>' + weekHTML() + '</div>' +
+      '<div class="grow"></div>' +
+      '<button class="primary" id="home">처음으로</button>' +
+      '<button class="ghost" id="hist">치과 갈 때 보여줄 기록</button>'
+    );
+    document.getElementById('nopain').addEventListener('click', function () { rec.pain = []; persist(rec); screenResult(rec, false); });
+    document.getElementById('yespain').addEventListener('click', function () { screenResult(rec, true); });
+    app.querySelectorAll('[data-p]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var n = +b.getAttribute('data-p'); var i = rec.pain.indexOf(n);
+        if (i === -1) rec.pain.push(n); else rec.pain.splice(i, 1);
+        persist(rec); var y = window.scrollY; screenResult(rec, true); window.scrollTo(0, y);
+      });
+    });
+    document.getElementById('home').addEventListener('click', screenHome);
+    document.getElementById('hist').addEventListener('click', screenHistory);
+  }
+  function persist(rec) {
+    for (var i = 0; i < records.length; i++) if (records[i].id === rec.id) records[i] = rec;
+    save(KEY_REC, records);
+  }
+
+  // ---------- 기록 ----------
+  function screenHistory() {
+    var since = new Date(); since.setDate(since.getDate() - 30); var sinceKey = dayKey(since);
+    var recent = records.filter(function (r) { return r.date >= sinceKey; });
+    var skipCount = {}, painCount = {};
+    recent.forEach(function (r) {
+      r.skipped.forEach(function (s) { skipCount[s] = (skipCount[s] || 0) + 1; });
+      r.pain.forEach(function (p) { painCount[p] = (painCount[p] || 0) + 1; });
+    });
+    function top(obj, unit) {
+      var arr = Object.keys(obj).sort(function (a, b) { return obj[b] - obj[a]; }).slice(0, 4);
+      return arr.length ? arr.map(function (k) { return k + unit + ' ' + obj[k] + '회'; }).join(', ') : '없음';
+    }
+    var list = records.slice().reverse().slice(0, 30).map(function (r) {
+      var d = r.date.split('-');
+      return '<div class="hist"><b>' + (+d[1]) + '월 ' + (+d[2]) + '일 · ' + (r.mode === 'prosth' ? '보철 모드' : '일반 모드') + '</b>' +
+        '<span class="muted">건너뜀: ' + (r.skipped.length ? r.skipped.join(', ') : '없음') + '</span>' +
+        '<span class="muted">불편했던 치아: ' + (r.pain.length ? r.pain.slice().sort(function (a, b) { return a - b; }).join(', ') + '번' : '없음') + '</span></div>';
+    }).join('');
+    show(
+      '<div class="topbar"><button class="iconbtn" id="back" aria-label="뒤로"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span></span></div>' +
+      '<div style="display:flex;flex-direction:column;gap:6px"><h1>치과 갈 때 보여줄 기록</h1><p class="lead">최근 30일, ' + recent.length + '회 양치</p></div>' +
+      '<div class="panel" style="font-size:15px;line-height:1.7"><span><b>자주 건너뛴 구역</b><br><span class="muted">' + top(skipCount, '') + '</span></span>' +
+      '<span><b>피나거나 시렸던 치아</b><br><span class="muted">' + top(painCount, '번') + '</span></span></div>' +
+      (list || '<div class="empty">아직 기록이 없어요.<br>첫 양치를 시작하면 여기에 쌓여요.</div>')
+    );
+    document.getElementById('back').addEventListener('click', screenHome);
+  }
+
+  // ---------- 시작 ----------
+  document.addEventListener('visibilitychange', function () { if (P && document.visibilityState === 'visible') requestWake(); });
+  if (settings && settings.mode) screenHome(); else screenMode();
+})();
+</script>
+</body>
+</html>

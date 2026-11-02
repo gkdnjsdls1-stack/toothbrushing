@@ -1,0 +1,16 @@
+{
+  "name": "양치",
+  "short_name": "양치",
+  "description": "양치하는 2분 동안 플레이하는 구강관리 게임",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#13201C",
+  "theme_color": "#13201C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
